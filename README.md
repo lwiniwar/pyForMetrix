@@ -126,7 +126,7 @@ On systems with sufficient memory (RAM > (number of processes) x (max. size of a
 input tiles rather than pixels.
 
 ## Full / API documentation
-The documentation generated from readthedocs can be found at
+The documentation generated from readthedocs can be found at [readthedocs]().
 
 
 ## Dependencies
