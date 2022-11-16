@@ -1,0 +1,31 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "pyForMetrix"
+version = "0.0.1"
+authors = [
+  { name="Lukas Winiwarter", email="lukas.pypi@winiwarter.dev" },
+]
+description = ""
+readme = "README.md"
+requires-python = ">=3.7"
+requires = [
+    "laxpy",
+    "numpy",
+    "scipy",
+    "pandas",
+    "tqdm",
+    "xarray",
+    "matplotlib",
+]
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+]
+
+[project.urls]
+"Homepage" = "https://github.com/lwiniwar/pyForMetrix"
+"Bug Tracker" = "https://github.com/lwiniwar/pyForMetrix/issues"
