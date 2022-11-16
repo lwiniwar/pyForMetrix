@@ -11,7 +11,7 @@ python -m pip install pyForMetrix
 
 ## Getting started 
  > Note: You can run this *Getting started* section on binder:
-> 
+[![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/lwiniwar/pyForMetrix/HEAD?labpath=demo%2Fgetting_started.ipynb)
 
 First, we need a point cloud dataset. You can use your own or download a sample dataset from OpenTopography:
 
