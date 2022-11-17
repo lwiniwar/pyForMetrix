@@ -10,30 +10,30 @@ from pyForMetrix.metrix import _rumple_index
 
 class MCalc_White_et_al_2015(MetricCalculator):
     """
-    Calculate metrics following White et al. (2015):
-        Comparing ALS and Image-Based Point Cloud Metrics and
-        Modelled Forest Inventory Attributes in a Complex Coastal
-        Forest Environment
+    Metric calculation class
+
+    Calculate metrics following
+    White et al. (2015):
+    Comparing ALS and Image-Based Point Cloud Metrics and
+    Modelled Forest Inventory Attributes in a Complex Coastal
+    Forest Environment
+
     https://doi.org/10.3390/f6103704
 
-    :param points: np.array of shape (n, 3) with points in a single compute unit -- normalized height required
-    :param progressbar: multiprocessing queue object to push updates to or None
-    :return: np.array of shape (8, ) with metrics: <br />
-        - Hmean <br />
-        - CoV <br />
-        - Skewness <br />
-        - Kurtosis <br />
-        - P10 <br />
-        - P90 <br />
-        - CCmean <br />
-        - Rumple <br />
-    See Table 6 in the paper for more information
+    See Table 6  in the paper and :meth:`__call__` for more information.
+
     """
-    SQRT_2 = np.sqrt(2)
     name = "White et al. (2015)"
 
     @staticmethod
     def get_names():
+        """
+        List names of the generated metrics
+
+        Returns:
+            :class:`list`:
+             list of strings with the metrics that will be generated.
+        """
         return [
             "Hmean",
             "CoV",
@@ -46,6 +46,24 @@ class MCalc_White_et_al_2015(MetricCalculator):
         ]
 
     def __call__(self, points_in_poly, rumple_pixel_size=1):
+        """
+        Calculate the metrics
+
+        Args:
+            points_in_poly: :class:`dict` that contains a key `points`, pointing to a :class:`numpy.ndarray` of shape (n,3)
+            rumple_pixel_size: pixel size used for rumple index calculation
+
+        Returns:
+            :class:`numpy.ndarray`:
+            - Hmean
+            - CoV
+            - Skewness
+            - Kurtosis
+            - P10
+            - P90
+            - CCmean
+            - Rumple
+        """
         points = points_in_poly['points']
         outArray = np.full(((len(self.get_names())), ), np.nan)
         points = points[points[:, 2] > 2]
@@ -67,16 +85,19 @@ class MCalc_White_et_al_2015(MetricCalculator):
 
 class MCalc_Hollaus_et_al_2009(MetricCalculator):
     """
-    Calculate metrics following Hollaus et al. (2009):
-                Growing stock estimation for alpine forests in Austria:
-                a robust lidar-based approach.
+    Metric calculation class
+
+    Calculate metrics following
+    Hollaus et al. (2009):
+    Growing stock estimation for alpine forests in Austria: a robust lidar-based approach.
+
     https://doi.org/10.1139/X09-042
 
-    :param points: np.array of shape (n, 3) with points in a single compute unit -- normalized height required
-    :param progressbar: multiprocessing queue object to push updates to or None
-    :return: np.array of shape (m, ) with metrics: <br />
-        - relative count of first echoes in canopy height class <br />
-    See Table 3 in the paper for more information.
+    See Table 3 in the paper and :meth:`__call__` for more information.
+
+    Args:
+        height_bins_upper: a :class:`numpy.ndarray` defining the upper limits for the height bin classes
+
     """
     name = "Hollaus et al. (2009)"
 
@@ -85,11 +106,32 @@ class MCalc_Hollaus_et_al_2009(MetricCalculator):
 
 
     def get_names(self):
+        """
+        List names of the generated metrics
+
+        Returns:
+            :class:`list`:
+             list of strings with the metrics that will be generated. As the number of height bins
+             is given by the user, the length of the list depends on the settings.
+
+        """
         return [
             f"v_fe_i{h}" for h in range(len(self.height_bins))
         ]
 
-    def __call__(self, points_in_poly, progressbar, CHM_pixel_size=1):
+    def __call__(self, points_in_poly, CHM_pixel_size=1):
+        """
+        Calculate the metrics
+
+        Args:
+            points_in_poly: :class:`dict` that contains a key `points`, pointing to a :class:`numpy.ndarray` of shape (n,3)
+            CHM_pixel_size: the pixel size for the canopy height model calculation
+
+        Returns:
+            :class:`numpy.ndarray`:
+            - relative count of first echoes in each canopy height class
+
+        """
         points = points_in_poly['points']
         # take first echoes only
         points = points[points_in_poly['echo_number'] == 1]
@@ -117,23 +159,25 @@ class MCalc_Hollaus_et_al_2009(MetricCalculator):
 
 
 class MCalc_Xu_et_al_2019(MetricCalculator):
+
     """
+    Metric calculation class
+
     Calculate metrics following Xu et al. (2019):
-        Estimation of secondary forest parameters by integrating
-        image and point cloud-based metrics acquired
-        from unmanned aerial vehicle
+    Estimation of secondary forest parameters by integrating
+    image and point cloud-based metrics acquired
+    from unmanned aerial vehicle
+
     https://doi.org/10.1117/1.JRS.14.022204
 
-    :param points: np.array of shape (n, 3) with points in a single compute unit -- normalized height required
-    :param progressbar: multiprocessing queue object to push updates to or None
-    :return: np.array of shape (8, ) with metrics: <br />
-        - Height percentiles (p10, p25, p30, p40, p60, p75, p85, p90) <br />
-        - Density metrics (d10, d25, d30, d40, d60, d75, d85, d90) <br />
-          (The proportion of points above the height percentiles,
-          Shen et al., 2018: https://doi.org/10.3390/rs10111729) <br />
-        - Height variation metrics (h_mean, h_max, h_min, h_cv)<br />
-    See Table 3 in the paper for more information.
+    See Table 3 in the paper and :meth:`__call__` for more information.
+
+    Args:
+        percentiles: a :class:`numpy.ndarray` with values between 0 and 100, representing the percentiles to be calculated
+        density_percentiles: a :class:`numpy.ndarray` with values between 0 and 100, representing the height percentiles for
+                             which densities are calculated
     """
+
     name = "Xu et al. (2019)"
 
     def __init__(self, percentiles=np.array([10, 25, 30, 40, 60, 75, 85, 90]),
@@ -143,6 +187,14 @@ class MCalc_Xu_et_al_2019(MetricCalculator):
 
 
     def get_names(self):
+        """
+        List names of the generated metrics
+
+        Returns:
+            :class:`list`:
+             list of strings with the metrics that will be generated. As the percentiles and density metrics
+             can be of different lengths, the length of the list depends on the settings.
+        """
         return [
             f"p{p}" for p in self.p] + \
             [f"d{d}" for d in self.d] + \
@@ -154,6 +206,19 @@ class MCalc_Xu_et_al_2019(MetricCalculator):
         ]
 
     def __call__(self, points_in_poly):
+        """
+        Calculate the metrics
+
+        Args:
+            points_in_poly: points_in_poly: :class:`dict` that contains a key `points`, pointing to a :class:`numpy.ndarray` of shape (n,3)
+
+        Returns:
+            :class:`numpy.ndarray`:
+            - Height percentiles (p10, p25, p30, p40, p60, p75, p85, p90)
+            - Density metrics (d10, d25, d30, d40, d60, d75, d85, d90)
+            (The proportion of points above the height percentiles, Shen et al., 2018: https://doi.org/10.3390/rs10111729)
+            - Height variation metrics (h_mean, h_max, h_min, h_cv)<br />
+        """
         points = points_in_poly['points']
         outArray = np.full(((len(self.get_names())), ), np.nan)
         points = points[points[:, 2] > 2]
@@ -177,28 +242,25 @@ class MCalc_Xu_et_al_2019(MetricCalculator):
 
 class MCalc_Woods_et_al_2009(MetricCalculator):
     """
+    Metric calculation class
+
     Calculate metrics following Woods et al. (2009):
-        Predicting forest stand variables from LiDAR data
-        in the Great Lakes – St. Lawrence forest of Ontario
+    Predicting forest stand variables from LiDAR data
+    in the Great Lakes – St. Lawrence forest of Ontario
+
     https://doi.org/10.5558/tfc84827-6
 
-    :param points: np.array of shape (n, 3) with points in a single compute unit -- normalized height required
-    :param echo_number: np.array of shape(n, 1) with the echo number of the points
-    :param classification: np.array of shape(n, 1) with the class IDs of the points (ASPRS LAS Classification)
-    :param progressbar: multiprocessing queue object to push updates to or None
-    :return: np.array of shape (8, ) with metrics: <br />
-    See Section "LIDAR based predictors" in the paper for more information.
+    See Section "LIDAR based predictors"  in the paper and :meth:`__call__` for more information.
+
+    Args:
+        percentiles: a :class:`numpy.ndarray` with values between 0 and 100, representing the percentiles to be calculated
+        density_percentiles: a :class:`numpy.ndarray` with values between 0 and 100, representing the height percentiles for
+                             which densities are calculated
     """
     name = "Woods et al. (2009)"
 
     def __init__(self, percentiles=np.array([10, 20, 30, 40, 50, 60, 70, 80, 90, 100]),
                  density_percentiles=np.array([10, 20, 30, 40, 50, 60, 70, 80, 90])):
-        """
-        Create a `MetricCalculator`
-        Args:
-            percentiles:
-            density_percentiles:
-        """
         self.p = np.array(percentiles)
         self.d = np.array(density_percentiles)
 
@@ -206,8 +268,11 @@ class MCalc_Woods_et_al_2009(MetricCalculator):
     def get_names(self):
         """
         List names of the generated metrics
-        Returns: A `list` of strings with the metrics that will be generated. As the percentiles and density metrics
-                 can be of different lengths, the length of the list depends on the settings.
+
+        Returns:
+            :class:`list`:
+             list of strings with the metrics that will be generated. As the percentiles and density metrics
+             can be of different lengths, the length of the list depends on the settings.
         """
         return [
             f"p{p}" for p in self.p] + \
@@ -224,16 +289,18 @@ class MCalc_Woods_et_al_2009(MetricCalculator):
     def __call__(self, points_in_poly:dict):
         """
         Calculate the metrics
+
         Args:
-            points_in_poly: `dict` that contains keys `points`, `echo_number` and `classification`.
+            points_in_poly: :class:`dict` that contains keys `points`, `echo_number` and `classification`.
                             Each of the keys points to a `numpy.ndarray` with n entries (3xn for `points`),
 
-        Returns: An `numpy.ndarray` containing the metrics derived for the input points, namely:
+        Returns:
+            :class:`numpy.ndarray`:
             - Statistical metrics (h_mean, h_stddev, h_absdev, h_skew, h_kurtosis)
-            - Canopy height metrics (p10, p20, p30, p40, p50, p60, p70, p80, p90, p100)
-            - Density metrics (d10, d25, d30, d40, d60, d75, d85, d90)
-                      (The proportion of points above the height percentiles,
-                       Xin et al., 2018: https://doi.org/10.3390/rs10111729)
+            - Canopy height metrics (default: p10, p20, p30, p40, p50, p60, p70, p80, p90, p100)
+            - Density metrics (default: d10, d20, d30, d40, d50, d60, d70, d80, d90)
+              (The proportion of points above the height percentiles,
+              Shen et al., 2018: https://doi.org/10.3390/rs10111729)
             - Fraction of first returns
             - Fraction of first returns in the vegetation class
         """

@@ -17,8 +17,10 @@ python -m pip install pyForMetrix
  > Note: You can run this *Getting started* section on binder:
 [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/lwiniwar/pyForMetrix/HEAD?labpath=demo%2Fgetting_started.ipynb)
 
-First, we need a point cloud dataset. You can use your own or download a sample dataset from OpenTopography:
+First, we need a point cloud dataset. You can use your own or download a sample dataset, e.g. from the City of Vancouver:
+https://webtransfer.vancouver.ca/opendata/2018LiDAR/4830E_54560N.zip
 
+Unzip this file to find a `.las`-File
 
 
 We need to read in the point cloud into a numpy array. Depending on the metrics we will derive later, 
@@ -29,7 +31,7 @@ echo number information is required. For reading in the file, we use [`laspy`](h
 import numpy as np
 import laspy
 
-inFile = laspy.read(r"C:\Users\Lukas\Documents\Data\okanagan_test\points.laz")
+inFile = laspy.read(r"4830E_54560N.las")
 coords = np.vstack([inFile.x,
                     inFile.y,
                     inFile.z]).transpose()
@@ -130,7 +132,7 @@ On systems with sufficient memory (RAM > (number of processes) x (max. size of a
 input tiles rather than pixels.
 
 ## Full / API documentation
-The documentation generated from readthedocs can be found at [readthedocs](https://pyformetrix.readthedocs.io/en/latest/).
+The full documentation can be found at [readthedocs](https://pyformetrix.readthedocs.io/en/latest/).
 
 
 ## Dependencies

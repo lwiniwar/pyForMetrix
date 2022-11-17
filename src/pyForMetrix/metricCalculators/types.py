@@ -8,12 +8,6 @@ from pyForMetrix.metrix import _rumple_index
 
 
 class MCalc_EchoMetrics(MetricCalculator):
-    """
-    Metric calculator for height-based metrics
-    :return: np.array of shape (11, ) with metrics: <br />
-        - Canopy height metrics (p10, p20, p30, p40, p50, p60, p70, p80, p90, p100) <br />
-        -
-    """
     name = "Echo metrics"
 
     def __init__(self):
@@ -25,7 +19,7 @@ class MCalc_EchoMetrics(MetricCalculator):
             "p_first_veg_returns"
         ]
 
-    def __call__(self, points_in_poly: dict, rumple_pixel_size=1):
+    def __call__(self, points_in_poly: dict):
         points = points_in_poly['points']
         echo_number = points_in_poly['echo_number']
         classification = points_in_poly['classification']
@@ -45,12 +39,6 @@ class MCalc_EchoMetrics(MetricCalculator):
 
 
 class MCalc_HeightMetrics(MetricCalculator):
-    """
-    Metric calculator for height-based metrics
-    :return: np.array of shape (11, ) with metrics: <br />
-        - Canopy height metrics (p10, p20, p30, p40, p50, p60, p70, p80, p90, p100) <br />
-        -
-    """
     name = "Height metrics"
 
     def __init__(self, percentiles=np.array([10, 20, 30, 40, 50, 60, 70, 80, 90, 100])):
@@ -63,7 +51,7 @@ class MCalc_HeightMetrics(MetricCalculator):
                    "h_mean",
                ]
 
-    def __call__(self, points_in_poly: dict, rumple_pixel_size=1):
+    def __call__(self, points_in_poly: dict):
         points = points_in_poly['points']
         outArray = np.full(((len(self.get_names())),), np.nan)
 
@@ -76,11 +64,6 @@ class MCalc_HeightMetrics(MetricCalculator):
 
 
 class MCalc_DensityMetrics(MetricCalculator):
-    """
-        Metric calculator for density-based metrics
-        :return: np.array of shape (8, ) with metrics: <br />
-        - Density metrics (d10, d25, d30, d40, d60, d75, d85, d90) <br />
-        """
     name = "Density metrics"
 
     def __init__(self, density_percentiles=np.array([10, 20, 30, 40, 50, 60, 70, 80, 90, 100])):
@@ -90,7 +73,7 @@ class MCalc_DensityMetrics(MetricCalculator):
         return [
             f"d{d}" for d in self.d]
 
-    def __call__(self, points_in_poly: dict, rumple_pixel_size=1):
+    def __call__(self, points_in_poly: dict):
         points = points_in_poly['points']
         outArray = np.full(((len(self.get_names())),), np.nan)
         with warnings.catch_warnings():
@@ -103,11 +86,6 @@ class MCalc_DensityMetrics(MetricCalculator):
 
 
 class MCalc_VarianceMetrics(MetricCalculator):
-    """
-    Metric calculator for height variance-based metrics
-    :return: np.array of shape (8, ) with metrics: <br />
-        - Statistical metrics (h_mean, h_stddev, h_absdev, h_skew, h_kurtosis, h_entropy)<br />
-    """
     name = "Variance metrics"
 
     def __init__(self):
@@ -122,7 +100,7 @@ class MCalc_VarianceMetrics(MetricCalculator):
             "h_entropy"
         ]
 
-    def __call__(self, points_in_poly: dict, rumple_pixel_size=1):
+    def __call__(self, points_in_poly: dict):
         points = points_in_poly['points']
         outArray = np.full(((len(self.get_names())),), np.nan)
         with warnings.catch_warnings():
@@ -141,16 +119,6 @@ class MCalc_VarianceMetrics(MetricCalculator):
 
 
 class MCalc_CoverMetrics(MetricCalculator):
-    ...
-
-    """
-    Metric calculator for height variance-based metrics
-    :return: np.array of shape (8, ) with metrics: <br />
-        - Crown coverage (#points > 2m height / #points total)<br />
-        - Crown coverage (#points > mean height / #points total)<br />
-        - Rumple index <br />
-        - 
-    """
     name = "Variance metrics"
 
     def __init__(self):
