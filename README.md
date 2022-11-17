@@ -20,8 +20,7 @@ python -m pip install pyForMetrix
 First, we need a point cloud dataset. You can use your own or download a sample dataset, e.g. from the City of Vancouver:
 https://webtransfer.vancouver.ca/opendata/2018LiDAR/4830E_54560N.zip
 
-Unzip this file to find a `.las`-File
-
+Unzip this file after download to find a `.las`-File, which we will use in the following.
 
 We need to read in the point cloud into a numpy array. Depending on the metrics we will derive later, 
 different attributes also have to be loaded in. In this example, the 3D point cloud along with classification and
