@@ -19,6 +19,7 @@ requires = [
     "tqdm",
     "xarray",
     "matplotlib",
+    "shapely"
 ]
 classifiers = [
     "Programming Language :: Python :: 3",

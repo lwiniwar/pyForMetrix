@@ -143,6 +143,7 @@ This package relies on the following packages (installed automatically when usin
 - [`tqdm`](https://tqdm.github.io/)
 - [`xarray`](https://docs.xarray.dev/en/stable/)
 - [`matplotlib`](https://matplotlib.org/)
+- [`shapely`](https://shapely.readthedocs.io/en/stable/manual.html)
 
 ## Acknowledgement
 This package has been developed in the course of the *UncertainTree* project, funded by the Austrian Science Fund ([FWF](https://www.fwf.ac.at/)) [Grant number J 4672-N].

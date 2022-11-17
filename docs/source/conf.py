@@ -6,7 +6,7 @@ sys.path.insert(0, os.path.abspath('../../src'))
 
 autodoc_mock_imports = ['xarray', 'pandas', 'numpy',
                         'scipy', 'laxpy', 'tqdm',
-                        'matplotlib']
+                        'matplotlib', 'shapely']
 # -- Project information
 
 project = 'pyForMetrix'
