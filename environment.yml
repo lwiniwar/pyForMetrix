@@ -1,0 +1,11 @@
+name: python 3.9
+dependencies:
+  - python=3.9
+  - laxpy
+  - numpy
+  - scipy
+  - pandas
+  - tqdm
+  - xarray
+  - matplotlib
+  - shapely
