@@ -187,24 +187,28 @@ class MCalc_Woods_et_al_2009(MetricCalculator):
     :param classification: np.array of shape(n, 1) with the class IDs of the points (ASPRS LAS Classification)
     :param progressbar: multiprocessing queue object to push updates to or None
     :return: np.array of shape (8, ) with metrics: <br />
-        - Statistical metrics (h_mean, h_stddev, h_absdev, h_skew, h_kurtosis)<br />
-        - Canopy height metrics (p10, p20, p30, p40, p50, p60, p70, p80, p90, p100) <br />
-        - Density metrics (d10, d25, d30, d40, d60, d75, d85, d90) <br />
-          (The proportion of points above the height percentiles,
-          Xin et al., 2018: https://doi.org/10.3390/rs10111729) <br />
-        - Fraction of first returns <br />
-        - Fraction of first returns in the vegetation class <br />
     See Section "LIDAR based predictors" in the paper for more information.
     """
     name = "Woods et al. (2009)"
 
     def __init__(self, percentiles=np.array([10, 20, 30, 40, 50, 60, 70, 80, 90, 100]),
                  density_percentiles=np.array([10, 20, 30, 40, 50, 60, 70, 80, 90])):
+        """
+        Create a `MetricCalculator`
+        Args:
+            percentiles:
+            density_percentiles:
+        """
         self.p = np.array(percentiles)
         self.d = np.array(density_percentiles)
 
 
     def get_names(self):
+        """
+        List names of the generated metrics
+        Returns: A `list` of strings with the metrics that will be generated. As the percentiles and density metrics
+                 can be of different lengths, the length of the list depends on the settings.
+        """
         return [
             f"p{p}" for p in self.p] + \
             [f"d{d}" for d in self.d] + \
@@ -218,6 +222,21 @@ class MCalc_Woods_et_al_2009(MetricCalculator):
             "p_first_veg_returns"
         ]
     def __call__(self, points_in_poly:dict):
+        """
+        Calculate the metrics
+        Args:
+            points_in_poly: `dict` that contains keys `points`, `echo_number` and `classification`.
+                            Each of the keys points to a `numpy.ndarray` with n entries (3xn for `points`),
+
+        Returns: An `numpy.ndarray` containing the metrics derived for the input points, namely:
+            - Statistical metrics (h_mean, h_stddev, h_absdev, h_skew, h_kurtosis)
+            - Canopy height metrics (p10, p20, p30, p40, p50, p60, p70, p80, p90, p100)
+            - Density metrics (d10, d25, d30, d40, d60, d75, d85, d90)
+                      (The proportion of points above the height percentiles,
+                       Xin et al., 2018: https://doi.org/10.3390/rs10111729)
+            - Fraction of first returns
+            - Fraction of first returns in the vegetation class
+        """
         points = points_in_poly['points']
         echo_number = points_in_poly['echo_number']
         classification = points_in_poly['classification']

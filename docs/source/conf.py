@@ -23,6 +23,7 @@ extensions = [
     'sphinx.ext.doctest',
     'sphinx.ext.autodoc',
 
+    'm2r2',
     'sphinx.ext.napoleon',
     'sphinx.ext.autosummary',
     'sphinx.ext.intersphinx',
