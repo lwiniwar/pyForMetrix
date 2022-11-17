@@ -9,12 +9,16 @@ autodoc_mock_imports = ['xarray', 'pandas', 'numpy',
                         'matplotlib', 'shapely']
 # -- Project information
 
+from sphinx_pyproject import SphinxConfig
+
+config = SphinxConfig("../../pyproject.toml", globalns=globals())
+#
 project = 'pyForMetrix'
 copyright = '2022, Lukas Winiwarter'
 author = 'Lukas Winiwarter'
 master_doc = 'index'
-release = '0.0'
-version = '0.0.1'
+# release = '0.0'
+# version = '0.0.1a'
 
 # -- General configuration
 
