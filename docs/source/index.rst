@@ -4,6 +4,6 @@ Welcome to the pyForMetrix documentation!
 .. toctree::
    :maxdepth: 2
 
-   metrix
    readme
+   metrix
    metricCalculators
