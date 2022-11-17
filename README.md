@@ -1,4 +1,8 @@
 # pyForMetrix
+[![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/lwiniwar/pyForMetrix/HEAD?labpath=demo%2Fgetting_started.ipynb)
+[![ReadTheDocs](https://readthedocs.org/projects/pyformetrix/badge/?version=latest)](https://pyformetrix.readthedocs.io/en/latest/)
+[![FWF](https://img.shields.io/badge/funded%20by-FWF-green)](https://www.fwf.ac.at)
+
 
 `pyForMetrix` is a Python package to extract metrics commonly used in forestry from laser scanning/LiDAR data. Main functionalities include a plot-based and a pixel-based calculation, and handling of large datasets.
 
@@ -126,7 +130,7 @@ On systems with sufficient memory (RAM > (number of processes) x (max. size of a
 input tiles rather than pixels.
 
 ## Full / API documentation
-The documentation generated from readthedocs can be found at [readthedocs]().
+The documentation generated from readthedocs can be found at [readthedocs](https://pyformetrix.readthedocs.io/en/latest/).
 
 
 ## Dependencies
