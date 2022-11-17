@@ -5,7 +5,7 @@
 project = 'pyForMetrix'
 copyright = '2022, Lukas Winiwarter'
 author = 'Lukas Winiwarter'
-
+master_doc = 'index'
 release = '0.0'
 version = '0.0.1'
 
@@ -33,3 +33,4 @@ html_theme = 'sphinx_rtd_theme'
 
 # -- Options for EPUB output
 epub_show_urls = 'footnote'
+
