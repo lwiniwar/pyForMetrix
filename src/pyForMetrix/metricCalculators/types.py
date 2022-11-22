@@ -180,3 +180,97 @@ class MCalc_VisMetrics(MetricCalculator):
             outArray[2] = len(np.unique(points_in_poly['pt_src_id']))
             outArray[3] = np.max(sar)
         return outArray
+
+class MCalc_lidRmetrics_basic(MetricCalculator):
+    name = "_basic"
+    __names = ['n', 'zmax', 'zmin', 'zmean', 'zsd', 'zcv', 'zskew', 'zkurt']
+
+    def __call__(self, points:dict):
+        from pyForMetrix.metricCalculators.lidRmetrics.basic import *
+        outArray = np.full((len(self),), np.nan)
+        outArray[0] = basic_n(points)
+        outArray[1] = basic_zmax(points)
+        outArray[2] = basic_zmin(points)
+        outArray[3] = basic_zmean(points)
+        outArray[4] = basic_zsd(points)
+        outArray[5] = basic_zcv(points)
+        outArray[6] = basic_zskew(points)
+        outArray[7] = basic_zkurt(points)
+        return outArray
+
+
+class MCalc_lidRmetrics_percentiles(MetricCalculator):
+    name = "_percentiles"
+    def __init__(self, percentiles=np.array([1, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50,
+                                             55, 60, 65, 70, 75, 80, 85, 90, 95, 99])):
+        self.percentiles = percentiles
+        super(MCalc_lidRmetrics_percentiles, self).__init__()
+    def get_names(self):
+        return [f'zq{q:d}' for q in self.percentiles]
+
+    def __call__(self, points:dict):
+        from pyForMetrix.metricCalculators.lidRmetrics.percentiles import *
+        outArray = percentiles_z(points, self.percentiles)
+        return outArray
+
+class MCalc_lidRmetrics_percabove(MetricCalculator):
+    name = '_percabove'
+    def __init__(self, p_above=np.array([2, 5])):
+        self.p_above = p_above
+        super(MCalc_lidRmetrics_percabove, self).__init__()
+    def get_names(self):
+        return ['pzabovemean'] + [f'pzabove{q}' for q in self.p_above]
+    def __call__(self, points:dict):
+        from pyForMetrix.metricCalculators.lidRmetrics.percabove import *
+        outArray = np.full((len(self),), np.nan)
+        outArray[0] = percabove_pzabovemean(points)
+        outArray[1:] = [percabove_pzaboveX(points, X) for X in self.p_above]
+        return outArray
+
+class MCalc_lidRmetrics_dispersion(MetricCalculator):
+    name = '_dispersion'
+    __names = ['ziqr', 'zMADmean', 'zMADmedian', 'CRR', 'zentropy', 'VCI']
+    def __call__(self, points:dict, binsize:float=1):
+        from pyForMetrix.metricCalculators.lidRmetrics.dispersion import *
+        outArray = np.full((len(self),), np.nan)
+        outArray[0] = dispersion_ziqr(points)
+        outArray[1] = dispersion_zMADmean(points)
+        outArray[2] = dispersion_zMADmedian(points)
+        outArray[3] = dispersion_CRR(points)
+        outArray[4] = dispersion_zentropy(points, binsize=binsize)
+        outArray[5] = dispersion_VCI(points, binsize=binsize)
+        return outArray
+
+class MCalc_lidRmetrics_canopydensity(MetricCalculator):
+    name = '_canopydensity'
+    __names = ['zpcum1', 'zpcum2', 'zpcum3', 'zpcum4', 'zpcum5', 'zpcum6', 'zpcum7', 'zpcum8', 'zpcum9']
+class MCalc_lidRmetrics_Lmoments(MetricCalculator):
+    name = '_Lmoments'
+    __names = ['L1', 'L2', 'L3', 'L4', 'Lskew', 'Lkurt', 'Lcoefvar']
+class MCalc_lidRmetrics_lad(MetricCalculator):
+    name = '_lad'
+    __names = ['lad_max', 'lad_mean', 'lad_cv', 'lad_min']
+class MCalc_lidRmetrics_interval(MetricCalculator):
+    name = "_interval"
+    def __init__(self, intervals=np.array([0, 0.15, 2, 5, 10, 20, 30])):
+        self.intervals = intervals
+        super(MCalc_lidRmetrics_interval, self).__init__()
+    def get_names(self):
+        return [f'zq{q}' for q in self.intervals]
+class MCalc_lidRmetrics_rumple(MetricCalculator):
+    name = '_rumple'
+    __names = ['_rumple']
+class MCalc_lidRmetrics_voxels(MetricCalculator):
+    name = '_voxels'
+    __names = ['vn', 'vFRall', 'vFRcanopy', 'vzrumple', 'vzsd', 'vzcv',
+               'OpenGapSpace', 'ClosedGapSpace', 'Euphotic', 'Oligophotic']
+class MCalc_lidRmetrics_kde(MetricCalculator):
+    name = '_kde'
+    __names = ['kde_peaks_count', 'kde_peaks_elev', 'kde_peaks_value']
+
+class MCalc_lidRmetrics_echo(MetricCalculator):
+    name = '_echo'
+    __names = ['pFirst', 'pIntermediate', 'pLast', 'pSingle', 'pMultiple']
+class MCalc_lidRmetrics_HOME(MetricCalculator):
+    name = '_HOME'
+    __names = ['HOME']
