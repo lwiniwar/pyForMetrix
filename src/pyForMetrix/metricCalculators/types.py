@@ -3,7 +3,7 @@ import warnings
 import numpy as np
 import scipy
 
-from pyForMetrix.metrix import MetricCalculator
+from pyForMetrix.metricCalculators import MetricCalculator
 from pyForMetrix.metrix import _rumple_index
 
 
@@ -142,4 +142,41 @@ class MCalc_CoverMetrics(MetricCalculator):
             outArray[1] = np.count_nonzero(points[:, 2] > np.mean(points[:, 2])) / points.shape[0]
             rumple = _rumple_index(points, rumple_pixel_size)
             outArray[2] = rumple
+        return outArray
+
+
+class MCalc_VisMetrics(MetricCalculator):
+    """
+    Calculate metrics for visualisation of the point cloud data
+
+    :param points: np.array of shape (n, 3) with points in a single compute unit -- normalized height required
+    :param progressbar: multiprocessing queue object to push updates to or None
+    :return: np.array of shape (2, ) with metrics: <br />
+        - Total number of points <br />
+        - Max. height model (CHM) <br />
+        - Number of unique strips at location <br />
+    """
+    name = "Visualisation only"
+
+    def __init__(self):
+        super(MCalc_VisMetrics, self).__init__()
+
+    def get_names(self):
+        return [
+            'nPoints',
+            'hmax',
+            'uniqueStrips',
+            'maxScanAngle'
+        ]
+
+    def __call__(self, points_in_poly:dict):
+        points = points_in_poly['points']
+        sar = points_in_poly['scan_angle_rank']
+        outArray = np.full(((len(self.get_names())), ), np.nan)
+        with warnings.catch_warnings():
+            warnings.simplefilter("ignore")
+            outArray[0] = points.shape[0]
+            outArray[1] = np.max(points[:, 2])
+            outArray[2] = len(np.unique(points_in_poly['pt_src_id']))
+            outArray[3] = np.max(sar)
         return outArray

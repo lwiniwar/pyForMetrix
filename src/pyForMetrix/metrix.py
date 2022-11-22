@@ -18,14 +18,15 @@ from shapely.geometry import Polygon
 from matplotlib.path import Path as mplPath
 from laxpy.tree import LAXTree
 from laxpy.file import LAXParser
+import laspy
 
-from . import rasterizer
-from .rasterizer import Rasterizer
+from pyForMetrix.metricCalculators import MetricCalculator
+from pyForMetrix.rasterizer import Rasterizer
 
 
 def _rumple_index(points, rumple_pixel_size):
     # rumple index
-    ras = rasterizer.Rasterizer(points, raster_size=(rumple_pixel_size, rumple_pixel_size))
+    ras = Rasterizer(points, raster_size=(rumple_pixel_size, rumple_pixel_size))
     CHM_x, CHM_y, CHM_z = ras.to_matrix(reducer=np.max)
     area_3d = 0
     CHM_xx, CHM_yy = np.meshgrid(CHM_x, CHM_y)
@@ -90,56 +91,6 @@ def parallel_custom_raster_metrics_for_chunk(XVoxelCenter, XVoxelContains, inPoi
     shm.close()
     if progressbar is not None:
         progressbar.put((0, -1))
-
-class MetricCalculator(abc.ABC):
-    def __call__(self, *args, **kwargs):
-        raise NotImplementedError
-
-    def __len__(self):
-        return len(self.get_names())
-
-    def get_names(self):
-        raise NotImplementedError
-
-
-class MCalc_VisMetrics(MetricCalculator):
-    """
-    Calculate metrics for visualisation of the point cloud data
-
-    :param points: np.array of shape (n, 3) with points in a single compute unit -- normalized height required
-    :param progressbar: multiprocessing queue object to push updates to or None
-    :return: np.array of shape (2, ) with metrics: <br />
-        - Total number of points <br />
-        - Max. height model (CHM) <br />
-        - Number of unique strips at location <br />
-    """
-    name = "Visualisation only"
-
-    def __init__(self):
-        super(MCalc_VisMetrics, self).__init__()
-
-    def get_names(self):
-        return [
-            'nPoints',
-            'hmax',
-            'uniqueStrips',
-            'maxScanAngle'
-        ]
-
-    def __call__(self, points_in_poly:dict, progressbar):
-        points = points_in_poly['points']
-        sar = points_in_poly['scan_angle_rank']
-        if progressbar is not None:
-            progressbar.put((1, 0))
-        outArray = np.full(((len(self.get_names())), ), np.nan)
-        with warnings.catch_warnings():
-            warnings.simplefilter("ignore")
-            outArray[0] = points.shape[0]
-            outArray[1] = np.max(points[:, 2])
-            outArray[2] = len(np.unique(points_in_poly['pt_src_id']))
-            outArray[3] = np.max(sar)
-        return outArray
-
 
 
 def calc_standard_metrics(points, p_zabovex, perc, progressbar):
@@ -222,7 +173,7 @@ class RasterMetrics(Metrics):
         self.XVoxelCenter = XVoxelCenter
         self.XVoxelContains = XVoxelContains
 
-    def calc_custom_metrics(self, metrics:MetricCalculator, metric_options=None):
+    def calc_custom_metrics(self, metrics: MetricCalculator, metric_options=None):
         if not isinstance(metrics, list):
             metrics = [metrics]
         if metric_options is None:
@@ -386,11 +337,17 @@ class RasterMetrics(Metrics):
 
 
 class PlotMetrics(Metrics):
-    def __init__(self, lasfiles, plot_polygons, nth_point_subsample=1, percentiles=np.arange(0, 101, 5), p_zabovex=None, silent=True, pbars=True):
+    def __init__(self, lasfiles, plot_polygons, silent=True, pbars=True):
+        """
+
+        Args:
+            lasfiles:
+            plot_polygons:
+            silent:
+            pbars:
+        """
         self.lasfiles = lasfiles
         self.plot_polygons = plot_polygons
-        self.perc = percentiles
-        self.p_zabovex = [] if p_zabovex is None else p_zabovex
         self.silent = silent
         self.pbars = pbars
 
@@ -406,6 +363,8 @@ class PlotMetrics(Metrics):
                 'scan_angle_rank': np.empty((0, ), dtype=int),
             } for i in range(len(plot_polygons))
         ]
+        if not isinstance(lasfiles, list):
+            lasfiles = [lasfiles]
 
         for lasfile in tqdm.tqdm(self.lasfiles, ncols=150, desc='Scanning input files to find polygon plots'):
             laxfile = re.sub(r'^(.*).la[sz]$', r'\1.lax', str(lasfile))
@@ -421,7 +380,7 @@ class PlotMetrics(Metrics):
                 candidate_indices = []
 
                 if not os.path.exists(laxfile):
-                    candidate_indices = np.arange(0, inFile.header.point_count)  # brute force through all points
+                    candidate_indices = [np.arange(0, inFile.header.point_count)]  # brute force through all points
                 else:
                     minx, maxx, miny, maxy = parser.bbox
                     bbox = Polygon([(minx, miny), (minx, maxy), (maxx, maxy), (maxx, miny)])
@@ -463,7 +422,7 @@ class PlotMetrics(Metrics):
         #         plt.axis('equal')
         #         plt.show()
         #         plt.close()
-    def calc_custom_metrics(self, metrics:MetricCalculator, metric_options=None):
+    def calc_custom_metrics(self, metrics: MetricCalculator, metric_options=None):
         if metric_options is None:
             metric_options = dict()
         out_metrics = np.full((len(self.plot_polygons), sum(map(lambda x: len(x.get_names()), metrics))), np.nan)
@@ -483,7 +442,7 @@ class PlotMetrics(Metrics):
             print(' [done]')
         return out_data
 
-    def calc_custom_metrics_stripwise(self, metrics:MetricCalculator, metric_options=None):
+    def calc_custom_metrics_stripwise(self, metrics: MetricCalculator, metric_options=None):
         if metric_options is None:
             metric_options = dict()
         out_metrics = []

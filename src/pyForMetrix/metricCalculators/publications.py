@@ -4,7 +4,7 @@ import numpy as np
 import scipy
 
 from pyForMetrix.rasterizer import Rasterizer
-from pyForMetrix.metrix import MetricCalculator
+from pyForMetrix.metricCalculators import MetricCalculator
 from pyForMetrix.metrix import _rumple_index
 
 
