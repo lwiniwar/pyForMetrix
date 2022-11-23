@@ -3,9 +3,8 @@ import enum
 import numpy as np
 import tqdm
 from scipy.spatial import cKDTree
-from sklearn.neighbors import KDTree
 
-from pyForMetrix.rasterizer import Rasterizer
+from pyForMetrix.utils.rasterizer import Rasterizer
 
 class NormalizeMode(enum.Enum):
     CylinderMode = 0

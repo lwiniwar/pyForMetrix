@@ -21,7 +21,8 @@ dependencies  = [
     "tqdm",
     "xarray",
     "matplotlib",
-    "shapely"
+    "shapely",
+    "lmoments3"
 ]
 #dependencies  = [
 #    "pip>=19.3",

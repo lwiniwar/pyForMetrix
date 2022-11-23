@@ -3,9 +3,9 @@ import warnings
 import numpy as np
 import scipy
 
-from pyForMetrix.rasterizer import Rasterizer
+from pyForMetrix.utils.rasterizer import Rasterizer
 from pyForMetrix.metricCalculators import MetricCalculator
-from pyForMetrix.metrix import _rumple_index
+from pyForMetrix.metricCalculators.lidRmetrics.rumple import rumple_index
 
 
 class MCalc_White_et_al_2015(MetricCalculator):
@@ -77,7 +77,7 @@ class MCalc_White_et_al_2015(MetricCalculator):
             outArray[3] = scipy.stats.kurtosis(points[:, 2])
             outArray[4:6] = np.percentile(points[:, 2], [10, 90])
             outArray[6] = np.count_nonzero(points[:, 2] > outArray[0]) / points.shape[0]
-            rumple = _rumple_index(points, rumple_pixel_size)
+            rumple = rumple_index(points, rumple_pixel_size)
             outArray[7] = rumple
 
         return outArray
