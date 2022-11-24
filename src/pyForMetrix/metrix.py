@@ -18,6 +18,7 @@ from shapely.geometry import Polygon
 from matplotlib.path import Path as mplPath
 from laxpy.tree import LAXTree
 from laxpy.file import LAXParser
+import laspy
 
 from pyForMetrix.metricCalculators import MetricCalculator
 from pyForMetrix.utils.rasterizer import Rasterizer
