@@ -6,6 +6,13 @@ import numpy as np
 
 class Rasterizer:
     def __init__(self, data, raster_size=(1, 1), method="random"):
+        """
+
+        Args:
+            data:
+            raster_size:
+            method:
+        """
         self.data = data
         if type(raster_size) is not tuple:
             raster_size = (raster_size, raster_size)
@@ -18,7 +25,10 @@ class Rasterizer:
         Adapted from Glira (https://github.com/pglira/Point_cloud_tools_for_Matlab/
         blob/master/classes/4pointCloud/uniformSampling.m)
 
-        :return:
+        Args:
+            origin:
+
+        Returns:
         """
         # No.of points
         noPoi = self.data.shape[0]

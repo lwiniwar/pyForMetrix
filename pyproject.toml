@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "pyForMetrix"
-version = "0.0.2"
+version = "0.0.3"
 authors = [
   { name="Lukas Winiwarter", email="lukas.pypi@winiwarter.dev" },
 ]
@@ -21,7 +21,8 @@ dependencies  = [
     "tqdm",
     "xarray",
     "matplotlib",
-    "shapely"
+    "shapely",
+    "lmoments3"
 ]
 #dependencies  = [
 #    "pip>=19.3",
