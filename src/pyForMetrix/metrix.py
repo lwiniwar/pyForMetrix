@@ -328,7 +328,7 @@ class PlotMetrics(Metrics):
             {
                 'points': np.empty((0, 3), dtype=float),
                 'echo_number': np.empty((0, ), dtype=int),
-                'number_of_echos': np.empty((0, ), dtype=int),
+                'number_of_echoes': np.empty((0, ), dtype=int),
                 'intensity': np.empty((0, ), dtype=float),
                 'classification': np.empty((0, ), dtype=int),
                 'pt_src_id': np.empty((0, ), dtype=int),
