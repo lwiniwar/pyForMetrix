@@ -131,7 +131,11 @@ On systems with sufficient memory (RAM > (number of processes) x (max. size of a
 input tiles rather than pixels.
 
 ### Plotwise metric extraction
-You can find an example notebook for plotwise metric extraction [here](https://github.com/lwiniwar/pyForMetrix/blob/main/demo/plotwise_metrics.ipynb), or [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/lwiniwar/pyForMetrix/HEAD?labpath=docs%2Fplotwise_metrics.ipynb) directly.
+You can find an example notebook for plotwise metric extraction [here](https://github.com/lwiniwar/pyForMetrix/blob/main/demo/plotwise_metrics.ipynb), or 
+
+[![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/lwiniwar/pyForMetrix/HEAD?labpath=docs%2Fplotwise_metrics.ipynb) 
+
+directly.
 
 ## Full / API documentation
 The full documentation can be found at [readthedocs](https://pyformetrix.readthedocs.io/en/latest/).

@@ -2,7 +2,7 @@ import abc
 
 
 class MetricCalculator(abc.ABC):
-    __names = []
+    _names = []
     def __call__(self, *args, **kwargs):
         raise NotImplementedError
 
@@ -10,4 +10,4 @@ class MetricCalculator(abc.ABC):
         return len(self.get_names())
 
     def get_names(self):
-        return __names
+        return self._names

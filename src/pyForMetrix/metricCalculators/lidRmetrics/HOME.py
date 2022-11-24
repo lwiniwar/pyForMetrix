@@ -20,7 +20,9 @@ def HOME_home(points, zmin=None):
     # plt.plot(csum1-csum2, 'b--')
     # plt.show()
     loc = np.nonzero(diffc)
-    return z[loc]
+    if len(z[loc]) == 0:  # no solution
+        return np.nan
+    return z[loc][0]
 
 
 

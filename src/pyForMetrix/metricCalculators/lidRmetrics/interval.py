@@ -1,6 +1,6 @@
 import numpy as np
 
-from basic import basic_n
+from pyForMetrix.metricCalculators.lidRmetrics.basic import basic_n
 
 def interval_p_below(points, threshold):
     n = basic_n(points)

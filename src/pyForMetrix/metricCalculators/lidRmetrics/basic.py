@@ -3,17 +3,19 @@ from functools import lru_cache
 import numpy as np
 import scipy.stats
 
-@lru_cache(100)
+#@lru_cache(100)
 def basic_n(points):
     return points['points'].shape[0]
-@lru_cache(100)
+#@lru_cache(100)
 def basic_zmax(points):
     return np.max(points['points'][:, 2])
-@lru_cache(100)
+#@lru_cache(100)
 def basic_zmin(points):
     return np.min(points['points'][:, 2])
-@lru_cache(100)
+#@lru_cache(100)
 def basic_zmean(points):
+    if points['points'].shape[0] == 0:
+        return np.nan
     return np.mean(points['points'][:, 2])
 
 def basic_zsd(points):

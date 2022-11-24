@@ -2,9 +2,13 @@ import numpy as np
 import scipy.stats
 
 def kde_kde(points, bw=2):
-    xyz = points['points']
-    kernel = scipy.stats.gaussian_kde(xyz[:, 2], bw)
-    domain = np.arange(xyz[:, 2].min(), xyz[:, 2].max(), bw)
+    z = points['points'][:, 2]
+    try:
+        kernel = scipy.stats.gaussian_kde(z, bw)
+    except:
+        # could fail because of singular matrices or too few entries
+        return np.nan, np.nan, np.nan
+    domain = np.arange(z.min(), z.max(), bw)
     estim = kernel(domain)
     peaks = np.argwhere(np.diff(np.sign(np.diff(estim))) < 0) +1
     # import matplotlib.pyplot as plt

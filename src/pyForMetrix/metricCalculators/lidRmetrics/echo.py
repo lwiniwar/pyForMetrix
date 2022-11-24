@@ -8,12 +8,12 @@ def echo_pFirst(points):
     return first/n
 def echo_pIntermediate(points):
     n = basic_n(points)
-    intermediate = np.count_nonzero(points['echo_number'] > 1 & points['echo_number'] != points['number_of_echoes'])
+    intermediate = np.count_nonzero((points['echo_number'] > 1) & (points['echo_number'] != points['number_of_echoes']))
     return intermediate/n
 
 def echo_pLast(points):
     n = basic_n(points)
-    last = np.count_nonzero(points['echo_number'] == points['number_of_echoes'] & points['echo_number'] > 1)  # excluding single echoes
+    last = np.count_nonzero((points['echo_number'] == points['number_of_echoes']) & points['echo_number'] > 1)  # excluding single echoes
     return last/n
 
 def echo_pSingle(points):

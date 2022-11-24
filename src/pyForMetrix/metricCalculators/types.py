@@ -183,21 +183,20 @@ class MCalc_VisMetrics(MetricCalculator):
 
 class MCalc_lidRmetrics_basic(MetricCalculator):
     name = "_basic"
-    __names = ['n', 'zmax', 'zmin', 'zmean', 'zsd', 'zcv', 'zskew', 'zkurt']
+    _names = ['n', 'zmax', 'zmin', 'zmean', 'zsd', 'zcv', 'zskew', 'zkurt']
 
     def __call__(self, points:dict):
-        from pyForMetrix.metricCalculators.lidRmetrics.basic import *
-        outArray = np.full((len(self),), np.nan)
-        outArray[0] = basic_n(points)
-        outArray[1] = basic_zmax(points)
-        outArray[2] = basic_zmin(points)
-        outArray[3] = basic_zmean(points)
-        outArray[4] = basic_zsd(points)
-        outArray[5] = basic_zcv(points)
-        outArray[6] = basic_zskew(points)
-        outArray[7] = basic_zkurt(points)
-        return outArray
-
+        from pyForMetrix.metricCalculators.lidRmetrics import basic
+        return np.array([
+            basic.basic_n(points),
+            basic.basic_zmax(points),
+            basic.basic_zmin(points),
+            basic.basic_zmean(points),
+            basic.basic_zsd(points),
+            basic.basic_zcv(points),
+            basic.basic_zskew(points),
+            basic.basic_zkurt(points)
+            ])
 
 class MCalc_lidRmetrics_percentiles(MetricCalculator):
     name = "_percentiles"
@@ -209,9 +208,8 @@ class MCalc_lidRmetrics_percentiles(MetricCalculator):
         return [f'zq{q:d}' for q in self.percentiles]
 
     def __call__(self, points:dict):
-        from pyForMetrix.metricCalculators.lidRmetrics.percentiles import *
-        outArray = percentiles_z(points, self.percentiles)
-        return outArray
+        from pyForMetrix.metricCalculators.lidRmetrics import percentiles
+        return percentiles.percentiles_z(points, self.percentiles)
 
 class MCalc_lidRmetrics_percabove(MetricCalculator):
     name = '_percabove'
@@ -221,25 +219,25 @@ class MCalc_lidRmetrics_percabove(MetricCalculator):
     def get_names(self):
         return ['pzabovemean'] + [f'pzabove{q}' for q in self.p_above]
     def __call__(self, points:dict):
-        from pyForMetrix.metricCalculators.lidRmetrics.percabove import *
+        from pyForMetrix.metricCalculators.lidRmetrics import percabove
         outArray = np.full((len(self),), np.nan)
-        outArray[0] = percabove_pzabovemean(points)
-        outArray[1:] = [percabove_pzaboveX(points, X) for X in self.p_above]
+        outArray[0] = percabove.percabove_pzabovemean(points)
+        outArray[1:] = [percabove.percabove_pzaboveX(points, X) for X in self.p_above]
         return outArray
 
 class MCalc_lidRmetrics_dispersion(MetricCalculator):
     name = '_dispersion'
-    __names = ['ziqr', 'zMADmean', 'zMADmedian', 'CRR', 'zentropy', 'VCI']
+    _names = ['ziqr', 'zMADmean', 'zMADmedian', 'CRR', 'zentropy', 'VCI']
     def __call__(self, points:dict, binsize:float=1):
-        from pyForMetrix.metricCalculators.lidRmetrics.dispersion import *
-        outArray = np.full((len(self),), np.nan)
-        outArray[0] = dispersion_ziqr(points)
-        outArray[1] = dispersion_zMADmean(points)
-        outArray[2] = dispersion_zMADmedian(points)
-        outArray[3] = dispersion_CRR(points)
-        outArray[4] = dispersion_zentropy(points, binsize=binsize)
-        outArray[5] = dispersion_VCI(points, binsize=binsize)
-        return outArray
+        from pyForMetrix.metricCalculators.lidRmetrics import dispersion
+        return np.array([
+            dispersion.dispersion_ziqr(points),
+            dispersion.dispersion_zMADmean(points),
+            dispersion.dispersion_zMADmedian(points),
+            dispersion.dispersion_CRR(points),
+            dispersion.dispersion_zentropy(points, binsize=binsize),
+            dispersion.dispersion_VCI(points, binsize=binsize),
+        ])
 
 class MCalc_lidRmetrics_canopydensity(MetricCalculator):
     name = '_canopydensity'
@@ -247,33 +245,32 @@ class MCalc_lidRmetrics_canopydensity(MetricCalculator):
         self.num_groups = num_groups
         super(MCalc_lidRmetrics_canopydensity, self).__init__()
     def get_names(self):
-        return ['zpcum{i:d}' for i in range(1, self.num_groups)]
+        return [f'zpcum{i:d}' for i in range(1, self.num_groups)]
     def __call__(self, points):
-        from pyForMetrix.metricCalculators.lidRmetrics.canopydensity import *
-        outArray = canopydensity_zpcum(points, self.num_groups)
-        return outArray
+        from pyForMetrix.metricCalculators.lidRmetrics import canopydensity
+        return canopydensity.canopydensity_zpcum(points, self.num_groups)
 
 
 
 class MCalc_lidRmetrics_Lmoments(MetricCalculator):
     name = '_Lmoments'
-    __names = ['L1', 'L2', 'L3', 'L4', 'Lskew', 'Lkurt', 'Lcoefvar']
+    _names = ['L1', 'L2', 'L3', 'L4', 'Lskew', 'Lkurt', 'Lcoefvar']
 
     def __call__(self, points):
-        from pyForMetrix.metricCalculators.lidRmetrics.Lmoments import *
+        from pyForMetrix.metricCalculators.lidRmetrics import Lmoments
         outArray = np.full((len(self),), np.nan)
-        outArray[:4] = Lmoments_moments(points)
-        outArray[4:] = Lmoments_coefficients(points)  # order: L_skew, L_kurt, L_CV
+        outArray[:4] = Lmoments.Lmoments_moments(points)
+        outArray[4:] = Lmoments.Lmoments_coefficients(points)  # order: L_skew, L_kurt, L_CV
         return outArray
 class MCalc_lidRmetrics_lad(MetricCalculator):
     """
     Following http://doi.org/10.1016/j.rse.2014.10.004
     """
     name = '_lad'
-    __names = ['lad_max', 'lad_mean', 'lad_cv', 'lad_min']
+    _names = ['lad_max', 'lad_mean', 'lad_cv', 'lad_min']
     def __call__(self, points, dz=1):
-        from pyForMetrix.metricCalculators.lidRmetrics.lad import *
-        return lad_lad(points, dz)
+        from pyForMetrix.metricCalculators.lidRmetrics import lad
+        return lad.lad_lad(points, dz)
 class MCalc_lidRmetrics_interval(MetricCalculator):
     name = "_interval"
     def __init__(self, intervals=np.array([0, 0.15, 2, 5, 10, 20, 30])):
@@ -282,19 +279,18 @@ class MCalc_lidRmetrics_interval(MetricCalculator):
     def get_names(self):
         return [f'pz_below_{q}' for q in self.intervals]
     def __call__(self, points):
-        from pyForMetrix.metricCalculators.lidRmetrics.interval import *
-        return np.array([interval_p_below(points, threshold=X) for X in self.intervals])
+        from pyForMetrix.metricCalculators.lidRmetrics import interval
+        return np.array([interval.interval_p_below(points, threshold=X) for X in self.intervals])
 class MCalc_lidRmetrics_rumple(MetricCalculator):
     name = '_rumple'
-    __names = ['_rumple']
+    _names = ['rumple']
     def __call__(self, points, rumple_pixel_size=1):
-        from pyForMetrix.metricCalculators.lidRmetrics.rumple import *
-        return rumple_index(points, rumple_pixel_size)
+        from pyForMetrix.metricCalculators.lidRmetrics import rumple
+        return np.array([rumple.rumple_index(points, rumple_pixel_size)])
 
 class MCalc_lidRmetrics_voxels(MetricCalculator):
     name = '_voxels'
-    __names = ['vn', 'vFRall', 'vFRcanopy', 'vzrumple', 'vzsd', 'vzcv',
-               'OpenGapSpace', 'ClosedGapSpace', 'Euphotic', 'Oligophotic']
+    _names = ['vn', 'vFRall', 'vFRcanopy', 'vzrumple', 'vzsd', 'vzcv', 'OpenGapSpace', 'ClosedGapSpace', 'Euphotic', 'Oligophotic']
 
     def __call__(self, points, voxel_size=1):
         from pyForMetrix.metricCalculators.lidRmetrics import voxels
@@ -303,14 +299,15 @@ class MCalc_lidRmetrics_voxels(MetricCalculator):
         outArray[0] = voxels.voxels_vn(idxVoxelUnique)
         outArray[1] = voxels.voxels_vFRall(idxVoxelUnique)
         outArray[2] = voxels.voxels_vFRcanopy(idxVoxelUnique)
-        outArray[3] = voxels.voxels_vzrumple(idxVoxelUnique)
-        outArray[4] = voxels.voxels_vzsd(idxVoxelUnique)
-        outArray[5] = voxels.voxels_vzcv(idxVoxelUnique)
+        outArray[3] = voxels.voxels_vzrumple(idxVoxelUnique, voxel_size)
+        outArray[4] = voxels.voxels_vzsd(idxVoxelUnique, voxel_size)
+        outArray[5] = voxels.voxels_vzcv(idxVoxelUnique, voxel_size)
         outArray[6:] = voxels.voxels_lefsky(idxVoxelUnique)
         return outArray
+
 class MCalc_lidRmetrics_kde(MetricCalculator):
     name = '_kde'
-    __names = ['kde_peaks_count', 'kde_peaks_elev', 'kde_peaks_value']
+    _names = ['kde_peaks_count', 'kde_peaks_elev', 'kde_peaks_value']
 
     def __call__(self, points, bw=2):
         from pyForMetrix.metricCalculators.lidRmetrics import kde
@@ -319,7 +316,7 @@ class MCalc_lidRmetrics_kde(MetricCalculator):
 
 class MCalc_lidRmetrics_echo(MetricCalculator):
     name = '_echo'
-    __names = ['pFirst', 'pIntermediate', 'pLast', 'pSingle', 'pMultiple']
+    _names = ['pFirst', 'pIntermediate', 'pLast', 'pSingle', 'pMultiple']
 
     def __call__(self, points):
         from pyForMetrix.metricCalculators.lidRmetrics import echo
@@ -332,7 +329,7 @@ class MCalc_lidRmetrics_echo(MetricCalculator):
         ])
 class MCalc_lidRmetrics_HOME(MetricCalculator):
     name = '_HOME'
-    __names = ['HOME']
+    _names = ['HOME']
     def __call__(self, points):
         from pyForMetrix.metricCalculators.lidRmetrics import HOME
         return np.array([

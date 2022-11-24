@@ -63,6 +63,7 @@ class MCalc_White_et_al_2015(MetricCalculator):
             - P90
             - CCmean
             - Rumple
+
         """
         points = points_in_poly['points']
         outArray = np.full(((len(self.get_names())), ), np.nan)
@@ -88,8 +89,7 @@ class MCalc_Hollaus_et_al_2009(MetricCalculator):
     Metric calculation class
 
     Calculate metrics following
-    Hollaus et al. (2009):
-    Growing stock estimation for alpine forests in Austria: a robust lidar-based approach.
+    Hollaus et al. (2009): Growing stock estimation for alpine forests in Austria: a robust lidar-based approach.
 
     https://doi.org/10.1139/X09-042
 
@@ -159,7 +159,6 @@ class MCalc_Hollaus_et_al_2009(MetricCalculator):
 
 
 class MCalc_Xu_et_al_2019(MetricCalculator):
-
     """
     Metric calculation class
 
@@ -176,6 +175,7 @@ class MCalc_Xu_et_al_2019(MetricCalculator):
         percentiles: a :class:`numpy.ndarray` with values between 0 and 100, representing the percentiles to be calculated
         density_percentiles: a :class:`numpy.ndarray` with values between 0 and 100, representing the height percentiles for
                              which densities are calculated
+
     """
 
     name = "Xu et al. (2019)"
@@ -194,6 +194,7 @@ class MCalc_Xu_et_al_2019(MetricCalculator):
             :class:`list`:
              list of strings with the metrics that will be generated. As the percentiles and density metrics
              can be of different lengths, the length of the list depends on the settings.
+
         """
         return [
             f"p{p}" for p in self.p] + \
@@ -216,8 +217,11 @@ class MCalc_Xu_et_al_2019(MetricCalculator):
             :class:`numpy.ndarray`:
             - Height percentiles (p10, p25, p30, p40, p60, p75, p85, p90)
             - Density metrics (d10, d25, d30, d40, d60, d75, d85, d90)
-            (The proportion of points above the height percentiles, Shen et al., 2018: https://doi.org/10.3390/rs10111729)
-            - Height variation metrics (h_mean, h_max, h_min, h_cv)<br />
+
+              (The proportion of points above the height percentiles, Shen et al., 2018: https://doi.org/10.3390/rs10111729)
+
+            - Height variation metrics (h_mean, h_max, h_min, h_cv)
+
         """
         points = points_in_poly['points']
         outArray = np.full(((len(self.get_names())), ), np.nan)

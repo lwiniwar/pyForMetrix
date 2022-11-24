@@ -3,7 +3,11 @@ import numpy as np
 
 
 def Lmoments_moments(points):
-    return lmoments3.lmom_ratios(points['points'][:, 2], 4)
+    try:
+        res = lmoments3.lmom_ratios(points['points'][:, 2], 4)
+    except:
+        res = np.array([np.nan, np.nan, np.nan, np.nan])
+    return res
 
 def Lmoments_coefficients(points):
     mom = Lmoments_moments(points)
