@@ -18,6 +18,7 @@ from shapely.geometry import Polygon
 from matplotlib.path import Path as mplPath
 from laxpy.tree import LAXTree
 from laxpy.file import LAXParser
+import laspy
 
 from pyForMetrix.metricCalculators import MetricCalculator
 from pyForMetrix.utils.rasterizer import Rasterizer
@@ -328,7 +329,7 @@ class PlotMetrics(Metrics):
             {
                 'points': np.empty((0, 3), dtype=float),
                 'echo_number': np.empty((0, ), dtype=int),
-                'number_of_echos': np.empty((0, ), dtype=int),
+                'number_of_echoes': np.empty((0, ), dtype=int),
                 'intensity': np.empty((0, ), dtype=float),
                 'classification': np.empty((0, ), dtype=int),
                 'pt_src_id': np.empty((0, ), dtype=int),
@@ -371,7 +372,7 @@ class PlotMetrics(Metrics):
                     final_selection = candidate_indices[points_sel] #[::nth_point_subsample]
                     self.points[q_id]['points'] = np.concatenate((self.points[q_id]['points'], inFile.xyz[final_selection, :]), axis=0)
                     self.points[q_id]['echo_number'] = np.concatenate((self.points[q_id]['echo_number'], inFile.return_number[final_selection]), axis=0)
-                    self.points[q_id]['number_of_echos'] = np.concatenate((self.points[q_id]['number_of_echos'], inFile.number_of_returns[final_selection]), axis=0)
+                    self.points[q_id]['number_of_echoes'] = np.concatenate((self.points[q_id]['number_of_echoes'], inFile.number_of_returns[final_selection]), axis=0)
                     self.points[q_id]['intensity'] = np.concatenate((self.points[q_id]['intensity'], inFile.intensity[final_selection]), axis=0)
                     self.points[q_id]['classification'] = np.concatenate((self.points[q_id]['classification'], inFile.classification[final_selection]), axis=0)
                     self.points[q_id]['pt_src_id'] = np.concatenate((self.points[q_id]['pt_src_id'], inFile.pt_src_id[final_selection]), axis=0)

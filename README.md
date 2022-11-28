@@ -133,7 +133,7 @@ input tiles rather than pixels.
 ### Plotwise metric extraction
 You can find an example notebook for plotwise metric extraction [here](https://github.com/lwiniwar/pyForMetrix/blob/main/demo/plotwise_metrics.ipynb), or 
 
-[![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/lwiniwar/pyForMetrix/HEAD?labpath=docs%2Fplotwise_metrics.ipynb) 
+[![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/lwiniwar/pyForMetrix/HEAD?labpath=demo%2Fplotwise_metrics.ipynb) 
 
 directly.
 
