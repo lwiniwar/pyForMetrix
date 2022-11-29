@@ -430,6 +430,7 @@ class PlotMetrics(Metrics):
     def calc_custom_metrics(self, metrics: MetricCalculator, metric_options=None):
         """
         Calculates given metrics for points contained in the polygons given during construction of this class.
+
         Args:
             metrics: a single :class:`pyForMetrix.metricCalculators.MetricCalculator` instance or a :class:`list` of such classes
             metric_options: a :class:`list` of :class:`dict`s with options (kwargs) for each `MetricCalculator`, or None.
