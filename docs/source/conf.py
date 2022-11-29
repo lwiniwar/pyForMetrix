@@ -3,10 +3,6 @@
 import os
 import sys
 sys.path.insert(0, os.path.abspath('../../src'))
-
-autodoc_mock_imports = ['xarray', 'pandas', 'numpy',
-                        'scipy', 'laxpy', 'tqdm', 'laspy'
-                        'matplotlib', 'shapely', 'deprecated']
 # -- Project information
 
 from sphinx_pyproject import SphinxConfig
@@ -20,6 +16,10 @@ master_doc = 'index'
 # release = '0.0'
 # version = '0.0.1a'
 
+
+autodoc_mock_imports = ['xarray', 'pandas', 'numpy',
+                        'scipy', 'laxpy', 'tqdm', 'laspy'
+                        'matplotlib', 'shapely', 'deprecated']
 # -- General configuration
 
 extensions = [
