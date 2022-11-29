@@ -18,7 +18,7 @@ master_doc = 'index'
 
 
 autodoc_mock_imports = ['xarray', 'pandas', 'numpy',
-                        'scipy', 'laxpy', 'tqdm', 'laspy'
+                        'scipy', 'laxpy', 'tqdm', 'laspy',
                         'matplotlib', 'shapely', 'deprecated']
 # -- General configuration
 
