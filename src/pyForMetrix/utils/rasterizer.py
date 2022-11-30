@@ -177,21 +177,4 @@ def save_subsample_pcloud(data, closestIdx, fname, delim=","):
     np.savetxt(fname, data_subs, delimiter=delim, fmt="%.3f")
 
 if __name__ == '__main__':
-    import time
-    import pandas
-    import sys
-
-    print("Loading file...", end='')
-    t = time.time()
-    data = pandas.read_csv(sys.argv[1], sep='\s+', skipinitialspace=True).to_numpy(dtype=float)
-    print(" [done (%.3f s)].\nVoxelizing..." % (time.time() - t), end='')
-    t = time.time()
-    vox_size_x = vox_size_y = vox_size_z = float(sys.argv[2])
-    vox = Voxelizer(data, voxel_size=(vox_size_x, vox_size_y, vox_size_z), method=sys.argv[4])
-    centers, idxs, voxelIdx, closestIdx = vox.voxelize()
-    print(" [done (%.3f s)]." % (time.time() - t))
-    print("Voxelization of %s points with a voxel size of (%s|%s|%s) resulted in %d filled voxels" % (
-        data.shape[0], vox_size_x, vox_size_y, vox_size_z, closestIdx.shape[0]))
-    # print(centers)
-    # plot_result(data, voxelIdx, closestIdx, vox_size_x, vox_size_y, vox_size_z)
-    save_subsample_pcloud(data, closestIdx, sys.argv[3])
+    pass
