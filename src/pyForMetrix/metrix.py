@@ -7,6 +7,8 @@ import functools
 import multiprocessing
 import multiprocessing.shared_memory
 
+from deprecated import deprecated
+
 import numpy as np
 import pandas as pd
 import scipy
@@ -22,7 +24,6 @@ import laspy
 
 from pyForMetrix.metricCalculators import MetricCalculator
 from pyForMetrix.utils.rasterizer import Rasterizer
-
 
 def parallel_raster_metrics_for_chunk(XVoxelCenter, XVoxelContains, inPoints,
                                       outArrayName, outArrayShape, outArrayType,
@@ -45,8 +46,7 @@ def parallel_raster_metrics_for_chunk(XVoxelCenter, XVoxelContains, inPoints,
 def parallel_custom_raster_metrics_for_chunk(XVoxelCenter, XVoxelContains, inPoints,
                                       outArrayName, outArrayShape, outArrayType,
                                       raster_size, raster_min,
-                                      perc, p_zabovex,
-                                      progressbar, metric):
+                                      progressbar, metric, metric_options):
     if progressbar is not None:
         progressbar.put((0, 1))
     shm = multiprocessing.shared_memory.SharedMemory(outArrayName)
@@ -57,8 +57,8 @@ def parallel_custom_raster_metrics_for_chunk(XVoxelCenter, XVoxelContains, inPoi
         points = {key: item[contains, ...] for key, item in inPoints.items()}
 
         out_metrics = []
-        for mx in metric:
-            cell_metrics = mx(points, progressbar)
+        for mx, mo in zip(metric, metric_options):
+            cell_metrics = mx(points, **mo)
             out_metrics.append(cell_metrics)
         outArray[cellX, cellY, :] = np.concatenate(out_metrics)
     shm.close()
@@ -119,6 +119,20 @@ class Metrics(abc.ABC):
 class RasterMetrics(Metrics):
     def __init__(self, points, raster_size, percentiles=np.arange(0, 101, 5), p_zabovex=None, silent=True, pbars=True,
                  raster_min=None, raster_max=None, origin=None):
+        """
+        Class to calculate metrics on a raster (cell) basis.
+
+        Args:
+            points: :class:`dict` containing keys 'points' and potentially other attributes, which are :numpy:ndarray s containing the points.
+            raster_size: :class:`float` raster cell size used for calculation
+            percentiles: deprecated
+            p_zabovex: deprecated
+            silent: deprecated
+            pbars: :class:`bool` whether to show progress bars or not
+            raster_min: :class:`numpy.ndarray` of shape `(2,)` with the minimum x/y coordinates for the raster (default: derive from point cloud)
+            raster_max: :class:`numpy.ndarray` of shape `(2,)` with the maximum x/y coordinates for the raster (default: derive from point cloud)
+            origin: :class:`numpy.ndarray` of shape `(2,)` with the origin x/y coordinates (pixel center) for the raster (default: same as `raster_min`)
+        """
         self.pbars = pbars
         self.perc = percentiles
         self.p_zabovex = p_zabovex if p_zabovex is not None else []
@@ -147,6 +161,16 @@ class RasterMetrics(Metrics):
         self.XVoxelContains = XVoxelContains
 
     def calc_custom_metrics(self, metrics: MetricCalculator, metric_options=None):
+        """
+        Calculates the given metrics on the point cloud this class was initialized on.
+
+        Args:
+            metrics: a single :class:`pyForMetrix.metricCalculators.MetricCalculator` instance or a :class:`list` of such classes
+            metric_options: a :class:`list` of :class:`dict`s with options (kwargs) for each `MetricCalculator`, or None.
+
+        Returns:
+            An :class:`xarray.Dataset` containing the metric(s) in a raster grid
+        """
         if not isinstance(metrics, list):
             metrics = [metrics]
         if metric_options is None:
@@ -169,18 +193,34 @@ class RasterMetrics(Metrics):
 
 
     def calc_custom_metrics_parallel(self, metrics, n_chunks=16, n_processes=4, pbar_position=0,
-                                     multiprocessing_point_threshold=10_000, *args, **kwargs):
+                                     multiprocessing_point_threshold=10_000, metric_options=None):
+        """
+        Calculates the given metrics on the point cloud this class was initialized on, in parallel.
+        Parallelization is achieved by spawning multiple processes for subsets of the raster cells. Note that
+        it might be faster to parallelize over input datasets, if they are chunked.
+
+        Args:
+            metrics: see :func:`calc_custom_metrics`
+            n_chunks: number of chunks to split the valid raster cells into (more chunks decrease memory usage)
+            n_processes: number of processes to work on the chunks (more processes increase memory usage)
+            pbar_position: deprecated
+            multiprocessing_point_threshold: number of raster cells at which multiprocessing should be started. For
+                relatively small datasets, the overhead of spawning extra processes outweights the benefit. Ideal setting
+                depends on the features that are calculated
+            metric_options: see :func:`calc_custom_metrics`
+
+        Returns:
+            An :class:`xarray.Dataset` containing the metric(s) in a raster grid
+
+        """
         if not isinstance(metrics, list):
             metrics = [metrics]
+        if metric_options is None:
+            metric_options = [dict()] * len(metrics)
 
         # if there are actually rather few voxels (e.g., < 10,000), single thread is faster due to less overhead
         if len(self.XVoxelCenter[0]) < multiprocessing_point_threshold:
-            return self.calc_custom_metrics(metrics=metrics, pbar_position=pbar_position, progressbaropts={
-                'desc': 'Computing raster metrics (   Single Process)',
-                'ncols': 150,
-                'leave': False,
-                'colour': '#94f19b'
-            })
+            return self.calc_custom_metrics(metrics=metrics, metric_options=metric_options)
 
         num_feats = sum([len(m.get_names()) for m in metrics])
 
@@ -208,10 +248,9 @@ class RasterMetrics(Metrics):
                                                 outArrayType=data_arr.dtype,
                                                 raster_size=self.raster_size,
                                                 raster_min=self.raster_min,
-                                                perc=self.perc,
-                                                p_zabovex=self.p_zabovex,
                                                 progressbar=pbarQueue,
-                                                metric = metrics)
+                                                metric = metrics,
+                                                metric_options = metric_options)
         pool.starmap(processing_function, zip(XVoxelCenterChunks, XVoxelContainsChunks), chunksize=1)
         data[:] = data_arr[:]
         shm.close()
@@ -220,6 +259,7 @@ class RasterMetrics(Metrics):
             pbarProc.kill()
         return self.convert_to_custom_data_array(data, metrics)
 
+    @deprecated(version="0.0.5", reason="This function is being replaced by calc_custom_metrics")
     def calc_metrics(self,
                      progressbaropts=None,
                      pbar_position=0,
@@ -248,6 +288,8 @@ class RasterMetrics(Metrics):
                                  # 'x': np.linspace(self.raster_min[0], self.raster_max[0], self.raster_dims[0]) + self.raster_size/2,
                                  'val': np.concatenate([m.get_names() for m in metrics])
                                  })
+
+    @deprecated(version="0.0.5", reason="This function is being replaced by convert_to_custom_data_array")
     def convert_to_data_array(self, data):
         return xarray.DataArray(data, dims=('y', 'x', 'val'),
                          coords={'y': np.arange(self.raster_min[1], self.raster_max[1], self.raster_size) + self.raster_size/2,
@@ -266,6 +308,7 @@ class RasterMetrics(Metrics):
                                         [f"pAboveX{x}Z" for x in self.p_zabovex]
                                  })
 
+    @deprecated(version="0.0.5", reason="This function is being replaced by calc_custom_metrics_parallel")
     def calc_metrics_parallel(self, n_chunks=16, n_processes=4, pbar_position=0, *args, **kwargs):
         # if there are actually rather few voxels (e.g., < 10,000), single thread is faster due to less overhead
         if len(self.XVoxelCenter[0]) < 10_000:
@@ -312,12 +355,16 @@ class RasterMetrics(Metrics):
 class PlotMetrics(Metrics):
     def __init__(self, lasfiles, plot_polygons, silent=True, pbars=True):
         """
+        Class to calculate metrics on a plot (polygon) basis
 
         Args:
-            lasfiles:
-            plot_polygons:
-            silent:
-            pbars:
+            lasfiles: :class:`list` of input las-Files to consider. Note that the scanning (finding the points inside
+                the plots) can be sped up siginificantly by providing `.lax`-Files, which can be generated e.g. using
+                lasindex, part of the LASTools (https://rapidlasso.com/lastools/, proprietory software with free/open
+                components).
+            plot_polygons: :class:`geopandas.GeoDataFrame` array containing the geometries (polygons) of interest
+            silent: :class:`boolean` whether to print output or not
+            pbars: :class:`boolean` whether to display progress bars or not
         """
         self.lasfiles = lasfiles
         self.plot_polygons = plot_polygons
@@ -380,22 +427,18 @@ class PlotMetrics(Metrics):
                                                                            inFile.scan_angle_rank[final_selection] if hasattr(inFile, 'scan_angle_rank') else inFile.scan_angle[final_selection]
                                                                            ), axis=0)
 
-        # for q_id, q in plot_polygons.iterrows():
-        #     if q.PLOT in ['PRF001',
-        #                   'PRF002',
-        #                   'PRF003',
-        #                   'PRF016',
-        #                   'PRF024',
-        #                   'PRF205']:
-        #         import matplotlib.pyplot as plt
-        #         plt.figure()
-        #         plt.scatter(self.coords[q_id][:, 0], self.coords[q_id][:, 1],
-        #                     c=self.coords[q_id][:, 2], s=0.5)
-        #         plt.title(q.PLOT)
-        #         plt.axis('equal')
-        #         plt.show()
-        #         plt.close()
     def calc_custom_metrics(self, metrics: MetricCalculator, metric_options=None):
+        """
+        Calculates given metrics for points contained in the polygons given during construction of this class.
+
+        Args:
+            metrics: a single :class:`pyForMetrix.metricCalculators.MetricCalculator` instance or a :class:`list` of such classes
+            metric_options: a :class:`list` of :class:`dict`s with options (kwargs) for each `MetricCalculator`, or None.
+
+        Returns:
+            a :class:`pandas.DataFrame` containing the metrics for each polygon in the input.
+
+        """
         if metric_options is None:
             metric_options = dict()
         out_metrics = np.full((len(self.plot_polygons), sum(map(lambda x: len(x.get_names()), metrics))), np.nan)
@@ -447,6 +490,8 @@ class PlotMetrics(Metrics):
         if not self.silent:
             print(' [done]')
         return out_data, out_meta
+
+    @deprecated(version="0.0.5", reason="This function is being replaced by calc_custom_metrics")
 
     def calc_metrics(self):
         out_metrics = np.full((len(self.plot_polygons), 8 + len(self.perc) + len(self.p_zabovex)), np.nan)

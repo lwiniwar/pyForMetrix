@@ -140,7 +140,7 @@ class MCalc_CoverMetrics(MetricCalculator):
 
             outArray[0] = np.count_nonzero(points[:, 2] > 2.0) / points.shape[0]
             outArray[1] = np.count_nonzero(points[:, 2] > np.mean(points[:, 2])) / points.shape[0]
-            rumple = rumple_index(points, rumple_pixel_size)
+            rumple = rumple_index(points_in_poly, rumple_pixel_size)
             outArray[2] = rumple
         return outArray
 
