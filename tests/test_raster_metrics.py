@@ -1,4 +1,5 @@
 from test_plot_metrics import ensure_netzkater_data, datadir
+import laspy
 
 
 def test_group_metrics():
@@ -7,7 +8,6 @@ def test_group_metrics():
     from pyForMetrix.metrix import RasterMetrics
     from pyForMetrix.normalizer import normalize
     ensure_netzkater_data()
-    import laspy
     data = laspy.read(datadir / 'las_623_5718_1_th_2014-2019.laz')
     points = {
         'points': data.xyz,
