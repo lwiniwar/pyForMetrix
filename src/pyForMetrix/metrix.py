@@ -433,7 +433,7 @@ class PlotMetrics(Metrics):
 
         Args:
             metrics: a single :class:`pyForMetrix.metricCalculators.MetricCalculator` instance or a :class:`list` of such classes
-            metric_options: a :class:`list` of :class:`dict`s with options (kwargs) for each `MetricCalculator`, or None.
+            metric_options: a :class:`list` of :class:`dict` s with options (kwargs) for each `MetricCalculator`, or None.
 
         Returns:
             a :class:`pandas.DataFrame` containing the metrics for each polygon in the input.

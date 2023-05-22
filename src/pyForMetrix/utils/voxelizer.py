@@ -52,7 +52,7 @@ class Voxelizer:
 
         # Prepare list for every output voxel
         XVoxelContains = [[] for i in range(noVoxel)]
-        XClosestIndex = np.full((noVoxel,), np.nan, dtype=np.int)
+        XClosestIndex = np.full((noVoxel,), np.nan, dtype=int)
 
         # Select points nearest to voxel centers - --------------------------------------
 
