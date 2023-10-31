@@ -1,7 +1,6 @@
 name: python 3.9
 dependencies:
   - python=3.9
-  - laxpy
   - numpy
   - scipy
   - pandas
@@ -10,3 +9,5 @@ dependencies:
   - matplotlib
   - shapely
   - rioxarray
+  - pip:
+      - git+https://github.com/lwiniwar/laxpy.git
