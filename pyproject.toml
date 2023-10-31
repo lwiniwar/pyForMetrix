@@ -46,3 +46,6 @@ classifiers = [
 [project.urls]
 "Homepage" = "https://github.com/lwiniwar/pyForMetrix"
 "Bug Tracker" = "https://github.com/lwiniwar/pyForMetrix/issues"
+
+[tool.hatch.metadata]
+allow-direct-references = true
