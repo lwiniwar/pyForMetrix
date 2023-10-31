@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "pyForMetrix"
-version = "0.0.5"
+version = "0.0.7"
 authors = [
   { name="Lukas Winiwarter", email="lukas.pypi@winiwarter.dev" },
 ]
@@ -13,7 +13,7 @@ readme = "README.md"
 requires-python = ">=3.8"
 dependencies  = [
     "pip>=19.3",
-    "laxpy",
+    "laxpy@git+https://github.com/lwiniwar/laxpy.git",
     "laspy",
     "numpy",
     "scipy",
@@ -46,3 +46,6 @@ classifiers = [
 [project.urls]
 "Homepage" = "https://github.com/lwiniwar/pyForMetrix"
 "Bug Tracker" = "https://github.com/lwiniwar/pyForMetrix/issues"
+
+[tool.hatch.metadata]
+allow-direct-references = true
