@@ -384,7 +384,7 @@ class PlotMetrics(Metrics):
             } for i in range(len(plot_polygons))
         ]
         if not isinstance(lasfiles, list):
-            lasfiles = [lasfiles]
+            self.lasfiles = [lasfiles]
 
         for lasfile in tqdm.tqdm(self.lasfiles, ncols=150, desc='Scanning input files to find polygon plots'):
             laxfile = re.sub(r'^(.*).la[sz]$', r'\1.lax', str(lasfile))
@@ -521,6 +521,73 @@ class PlotMetrics(Metrics):
         if not self.silent:
             print(' [done]')
         return out_data
+
+class FileMetrics(Metrics):
+    def __init__(self, lasfiles, silent=True, pbars=True):
+        """
+        Class to calculate metrics on a file basis
+
+        Args:
+            lasfiles: :class:`list` of input las-Files to consider. Note that the scanning (finding the points inside
+                the plots) can be sped up siginificantly by providing `.lax`-Files, which can be generated e.g. using
+                lasindex, part of the LASTools (https://rapidlasso.com/lastools/, proprietory software with free/open
+                components).
+            silent: :class:`boolean` whether to print output or not
+            pbars: :class:`boolean` whether to display progress bars or not
+        """
+        self.lasfiles = lasfiles
+        self.silent = silent
+        self.pbars = pbars
+
+        # find points that are in the polygons
+        self.points = []
+        if not isinstance(lasfiles, list):
+            self.lasfiles = [lasfiles]
+
+        for lasfile in tqdm.tqdm(self.lasfiles, ncols=150, desc='Loading input files'):
+            inFile = laspy.read(lasfile)
+
+            self.points.append({
+                'points': inFile.xyz,
+                'echo_number': inFile.return_number,
+                'number_of_echoes': inFile.number_of_returns,
+                'intensity': inFile.intensity,
+                'classification': inFile.classification,
+                'pt_src_id': inFile.pt_src_id,
+                'scan_angle_rank': inFile.scan_angle_rank
+            })
+
+    def calc_custom_metrics(self, metrics: MetricCalculator, metric_options=None):
+        """
+        Calculates given metrics for points contained in the polygons given during construction of this class.
+
+        Args:
+            metrics: a single :class:`pyForMetrix.metricCalculators.MetricCalculator` instance or a :class:`list` of such classes
+            metric_options: a :class:`list` of :class:`dict` s with options (kwargs) for each `MetricCalculator`, or None.
+
+        Returns:
+            a :class:`pandas.DataFrame` containing the metrics for each polygon in the input.
+
+        """
+        if metric_options is None:
+            metric_options = dict()
+        out_metrics = np.full((len(self.points), sum(map(lambda x: len(x.get_names()), metrics))), np.nan)
+        # plot_names = []
+        if not self.silent:
+            print('Calculating features for plot files...', end='')
+        for q_id, q in tqdm.tqdm(self.lasfiles, f"Calculating metrics", total=len(self.lasfiles)):
+            points_in_file = self.points[q_id]
+            if len(points_in_file['points']) > 0:
+                out_metrics[q_id] = np.concatenate(list(map(lambda x: x(points_in_file, **metric_options), metrics)))
+                out_data = pd.DataFrame(out_metrics,  # index=plot_names,
+                                columns=
+                                np.concatenate(list(map(lambda x: x.get_names(), metrics)))
+                                )
+
+        if not self.silent:
+            print(' [done]')
+        return out_data
+
 
 if __name__ == '__main__':
     pass
