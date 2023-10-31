@@ -13,7 +13,7 @@ readme = "README.md"
 requires-python = ">=3.8"
 dependencies  = [
     "pip>=19.3",
-    "laxpy",
+    "laxpy@git+https://github.com/lwiniwar/laxpy/",
     "laspy",
     "numpy",
     "scipy",
