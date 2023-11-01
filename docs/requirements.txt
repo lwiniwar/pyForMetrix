@@ -1,3 +1,4 @@
 m2r2
+sphinx
 sphinx_pyproject
-sphinx-rtd-theme
+furo
