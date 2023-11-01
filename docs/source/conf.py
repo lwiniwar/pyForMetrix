@@ -36,9 +36,9 @@ extensions = [
 intersphinx_mapping = {
     'python': ('https://docs.python.org/3/', None),
     'sphinx': ('https://www.sphinx-doc.org/en/master/', None),
-    'numpy': ('http://docs.scipy.org/doc/numpy/', None),
+    'numpy': ('https://numpy.org/doc/stable/', None),
     'xarray': ('https://docs.xarray.dev/en/stable/', None),
-    'pandas': ('https://pandasguide.readthedocs.io/en/latest/', None),
+    'pandas': ('http://pandas.pydata.org/pandas-docs/dev', None),
     'geopandas': ('https://geopandas.org/en/stable/', None),
 }
 
