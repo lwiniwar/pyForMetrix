@@ -10,4 +10,4 @@ dependencies:
   - shapely
   - rioxarray
   - pip:
-      - git+https://github.com/lwiniwar/laxpy.git
+      - laxpy
